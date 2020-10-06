@@ -1,0 +1,221 @@
+openapi: 3.0.0
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: 'http://localhost:9090/reveal/backend/v1'
+info:
+  description: reveal-backend apis
+  version: 1.0.0
+  title: reveal-backend apis
+  contact:
+    email: tangella.lokesh@gmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://localhost:9090/reveal/v1'
+tags: 
+    - name: Posts
+    - name: Groups
+    - name: Users
+paths:
+  '/posts':
+    get:
+      summary: Retrieve posts by GroupId and timstamp
+      operationId: Read Posts
+      description: api to be used by frontend (UI) to retrieve posts to display once a user logs in.This api returns a maximum of 100 posts per request which are older than the timestamp sent and shared within GroupId.
+      tags: 
+        - Posts
+      parameters: 
+        - in: query
+          name: groupId
+          required: true
+          schema: 
+            type: string
+            description: This is the unique id of group to which the user belongs to.
+        - in: query
+          name: timeStamp
+          schema: 
+            type: integer
+            format: int64
+            description: This is the timestamp (in milliseconds from January 1, 1970 UTC). All the 100 posts returned by this api will be not newer than this timestamp.
+            default: Current timeStamp.
+      responses: 
+        '200': 
+          description: The Request is successful and a max of 100 older posts (than timeStamp) are sent in response.
+          content:
+            application/json: 
+              schema: 
+                oneOf: 
+                  - $ref: '#/components/schemas/fullPost'
+                  - $ref: '#/components/schemas/emptyPosts'
+        '400': 
+          description: Bad Request, returned incase of malformed or missing params
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/clientError'
+        '403': 
+          description: Forbidden, user is not authorized to access posts from requestd group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/clientError'
+        '404': 
+          description: Group Id not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/clientError'
+    post:
+      summary: Create a new post, this post will be shared withing the group.
+      description: This api should be used to create new post.
+      requestBody:
+        content: 
+          application/json: 
+            schema: 
+              $ref: '#/components/schemas/newPost'
+      tags: 
+        - Posts
+      responses:
+        '201': 
+          description: Post successfully created.
+          content: 
+            application/json: 
+              schema: 
+                $ref: '#/components/schemas/singlePost'
+        '400': 
+          description: Bad Request, returned incase of malformed or missing params in request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/clientError'
+        '422': 
+          description: Unprocessable Request, Posted by an un-authorized/non-existing user or to a non-existing group.
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/clientError'
+                
+          
+        
+        
+  '/groups': 
+    get:
+      summary: Retrieve list of all groups existing.
+      description: To be used to get a list of all the groups existing. This returns only goup name and group Id.
+      tags: 
+        - Groups
+      responses:
+        '200': 
+          description: The request is successful and the response body has the expected data.
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/getGroups'
+        
+              
+              
+components: 
+  schemas: 
+    fullPost: 
+        type: object
+        required: 
+          - length
+          - posts
+        properties: 
+          length: 
+            type: integer
+            description: number posts in the response body.
+            maximum: 100
+          posts: 
+            type: array
+            items: 
+              $ref: '#/components/schemas/singlePost'
+    singlePost: 
+              type: object
+              required: 
+                - id
+                - postContent
+                - likesCount
+                - dislikesCount
+                - timeStamp
+              properties: 
+                  id: 
+                    type: integer
+                    description: id assigned to Post
+                  postContent: 
+                    type: string
+                    description: Actual content of the post.
+                    example: Hey, I heard that Mr.Bosco is going to attend French classes starting next fall !
+                  likesCount: 
+                    type: integer
+                    description: Number of people said they head about this post (no. of likes).
+                  dislikesCount: 
+                    type: integer
+                    description: Number of people mentioned it as a fake post (no. of dislikes).
+                  timeStamp: 
+                    type: integer
+                    format: int64
+                    description: timeStamp of when this Post is created.
+                    example: 192802839
+    emptyPosts: 
+      type: object
+      required: 
+          - length
+      properties: 
+          length: 
+            type: integer
+            description: number posts in the response body.
+            maximum: 0
+            minimum: 0
+            example: 0
+            
+    getGroups: 
+      type: object
+      properties:
+        groups: 
+          type: array
+          items:
+            type: object
+            properties:
+              groupId: 
+                type: number
+                description: The unique identifier assigned to group
+                example: 23323
+              groupName: 
+                type: string
+                description: The name of the group.
+                example: Harvard Group
+                
+    newPost: 
+      type: object
+      description: The data reqired to create a new Post successully.
+      
+      properties: 
+        postCreator: 
+          type: string
+          description: The userName of post creator.
+          example: wheeler
+        group: 
+          type: string
+          description: The group to which current post will be shared. This turns out to be group to which user belongs to.
+          example: Harvard Group
+        postContent: 
+          type: string
+          description: The actual content Posted/shared.
+          example: Hey, I heard that Mr.Bosco is going to attend French classes starting next fall !
+          
+    clientError: 
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          description: Best guess for the request failure.
+          example: Reason for failure.
+    serverError: 
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          description: Best guess for the request failure.
+          example: Reason for failure.
+    
+    
