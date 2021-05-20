@@ -24,7 +24,6 @@ import com.projectreveal.reveal.backend.logging.LoggingConstants;
 import com.projectreveal.reveal.backend.model.NewPost;
 import com.projectreveal.reveal.backend.model.Post;
 import com.projectreveal.reveal.backend.service.PostLoginService;
-import com.projectreveal.reveal.backend.validation.ParameterValidation;
 import com.projectreveal.reveal.backend.validation.UserValidation;
 
 
@@ -41,8 +40,6 @@ public class PostController {
 
 	private final Logger logger = LogManager.getLogger(PostController.class);
 	
-	@Autowired
-	private ParameterValidation parameterValidation;
 	
 	@Autowired
 	private UserValidation userValidation;
