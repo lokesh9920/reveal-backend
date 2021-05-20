@@ -39,24 +39,33 @@ public class PostFilter implements Filter{
 		System.out.println("the method is: " + httpRequest.getMethod());
 		if(httpRequest.getMethod().equalsIgnoreCase("OPTIONS")) {
 			chain.doFilter(request, response);
-			System.out.println("Its a options method");
 		}
 		else {
-			Cookie[] cookies = httpRequest.getCookies();
-			if(cookies!=null) {
-				System.out.println("cookies are not null");
-				for(Cookie cookie: cookies) {
-					if(cookie.getName().equals("access-token")) {
-						System.out.println("The cookie is : " + cookie.getValue());
-						try{
-							isValidated = validateToken.verifyToken(request, cookie.getValue());
-						}catch (ValidationException e) {
-							System.out.println("Caught validation exception");
-							isValidated = false;
-						}
-						break;
-					}
-						
+//			Cookie[] cookies = httpRequest.getCookies();
+//			if(cookies!=null) {
+//				System.out.println("cookies are not null");
+//				for(Cookie cookie: cookies) {
+//					if(cookie.getName().equals("access-token")) {
+//						System.out.println("The cookie is : " + cookie.getValue());
+//						try{
+//							isValidated = validateToken.verifyToken(request, cookie.getValue());
+//						}catch (ValidationException e) {
+//							System.out.println("Caught validation exception");
+//							isValidated = false;
+//						}
+//						break;
+//					}
+//						
+//				}
+//			}
+			
+			String token = httpRequest.getHeader("access-token");
+			if(token!=null || !token.isEmpty()) {
+				try{
+					isValidated = validateToken.verifyToken(request, token);
+				}catch (ValidationException e) {
+					System.out.println("Caught validation exception");
+					isValidated = false;
 				}
 			}
 			if(isValidated) {
