@@ -35,7 +35,7 @@ import com.projectreveal.reveal.backend.validation.UserValidation;
  */
 @RestController
 @RequestMapping("/posts")
-@CrossOrigin(origins = "https://reveal-site.herokuapp.com/", allowCredentials = "true")
+//@CrossOrigin(allowCredentials = "true")
 //the above allowCredentials is mandatory because frontend consumes these APIs with credentials=include(in order to send cookie by default)
 public class PostController {
 
@@ -50,6 +50,7 @@ public class PostController {
 	private PostLoginService postLoginService;
 	
 	@GetMapping
+	@CrossOrigin
 	public ResponseEntity<Object> getPosts(@RequestParam("groupId") long groupId, 
 										   @RequestParam(name = "timeStamp", required = false ) Long timeStamp) 
 						throws JsonMappingException, JsonProcessingException{
@@ -68,6 +69,7 @@ public class PostController {
 	}
 	
 	@PostMapping
+	@CrossOrigin
 	public ResponseEntity<Object> createPost(@RequestBody NewPost newPost, HttpServletRequest httpRequest){
 		logger.info(LoggingConstants.REQUEST_LOGGER,"POST","/posts");
 
