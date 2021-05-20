@@ -27,9 +27,16 @@ import com.projectreveal.reveal.backend.service.PostLoginService;
 import com.projectreveal.reveal.backend.validation.ParameterValidation;
 import com.projectreveal.reveal.backend.validation.UserValidation;
 
+
+/**
+ * The below APIs are subject to cookie validation from the filter
+ * @author ltangell
+ *
+ */
 @RestController
 @RequestMapping("/posts")
-@CrossOrigin(exposedHeaders = "Auth-Token")
+@CrossOrigin(allowCredentials = "true")
+//the above allowCredentials is mandatory because frontend consumes these APIs with credentials=include(in order to send cookie by default)
 public class PostController {
 
 	private final Logger logger = LogManager.getLogger(PostController.class);

@@ -16,6 +16,7 @@ import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
+import com.projectreveal.reveal.backend.exceptionhandler.ValidationException;
 import com.projectreveal.reveal.backend.validation.ValidateToken;
 
 
@@ -47,7 +48,12 @@ public class PostFilter implements Filter{
 				for(Cookie cookie: cookies) {
 					if(cookie.getName().equals("access-token")) {
 						System.out.println("The cookie is : " + cookie.getValue());
-						isValidated = validateToken.verifyToken(request, cookie.getValue());
+						try{
+							isValidated = validateToken.verifyToken(request, cookie.getValue());
+						}catch (ValidationException e) {
+							System.out.println("Caught validation exception");
+							isValidated = false;
+						}
 						break;
 					}
 						

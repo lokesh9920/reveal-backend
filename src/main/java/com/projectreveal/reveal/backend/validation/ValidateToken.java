@@ -74,13 +74,15 @@ public class ValidateToken {
 			ResponseEntity<User> responseEntity = new RestTemplate(requestFactory)
 					.exchange(requestEntity, User.class);
 		
-		
+			System.out.println(responseEntity.getStatusCodeValue());
 			if(responseEntity.getStatusCode().equals(HttpStatus.OK)) {
 					return true;	//indicates successful validation
 			}
 			else
 				throw new ValidationException("Failed to validate Token");
 		}catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 			throw new ValidationException("Failed to validate Token");
 		}
 				
