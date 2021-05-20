@@ -37,7 +37,7 @@ public class PostFilter implements Filter{
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		boolean isValidated = false;
 		System.out.println("the method is: " + httpRequest.getMethod());
-		if(httpRequest.getMethod().equals("OPTIONS")) {
+		if(httpRequest.getMethod().equalsIgnoreCase("OPTIONS")) {
 			chain.doFilter(request, response);
 			System.out.println("Its a options method");
 		}
