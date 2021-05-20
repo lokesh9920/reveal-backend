@@ -35,7 +35,7 @@ import com.projectreveal.reveal.backend.validation.UserValidation;
  */
 @RestController
 @RequestMapping("/posts")
-@CrossOrigin(allowCredentials = "true")
+//@CrossOrigin(allowCredentials = "true")
 //the above allowCredentials is mandatory because frontend consumes these APIs with credentials=include(in order to send cookie by default)
 public class PostController {
 
