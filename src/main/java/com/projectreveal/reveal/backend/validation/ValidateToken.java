@@ -74,9 +74,14 @@ public class ValidateToken {
 			ResponseEntity<User> responseEntity = new RestTemplate(requestFactory)
 					.exchange(requestEntity, User.class);
 		
-			System.out.println(responseEntity.getStatusCodeValue());
 			if(responseEntity.getStatusCode().equals(HttpStatus.OK)) {
-					return true;	//indicates successful validation
+				User client = responseEntity.getBody();
+				
+				request.setAttribute("userName", client.getUserName());
+				request.setAttribute("firstName", client.getFirstName());
+				request.setAttribute("lastName", client.getLastName());
+				request.setAttribute("groupId", client.getGroupId());
+				return true;	//indicates successful validation
 			}
 			else
 				throw new ValidationException("Failed to validate Token");

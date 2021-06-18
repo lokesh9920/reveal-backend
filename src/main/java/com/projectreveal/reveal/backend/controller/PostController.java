@@ -49,7 +49,8 @@ public class PostController {
 	@GetMapping
 	@CrossOrigin
 	public ResponseEntity<Object> getPosts(@RequestParam("groupId") long groupId, 
-										   @RequestParam(name = "timeStamp", required = false ) Long timeStamp) 
+										   @RequestParam(name = "timeStamp", required = false ) Long timeStamp,
+										   HttpServletRequest httpRequest) 
 						throws JsonMappingException, JsonProcessingException{
 		
 		
@@ -59,7 +60,11 @@ public class PostController {
 		//The validation is handled by filter through token
 
 		HashMap<String, Object> postsResult = null;
-		postsResult= postLoginService.getallPosts(groupId, timeStamp);
+		
+		//will use the groupId in token rathern than the query parameter value
+		long groupIdFromToken = Long.parseLong(httpRequest.getAttribute("groupId").toString());
+		
+		postsResult= postLoginService.getallPosts(groupIdFromToken, timeStamp);	
 		
 		logger.info(LoggingConstants.RESPONSE_BODY,"GET","/posts",HttpStatus.OK,postsResult);
 		return new ResponseEntity<Object>(postsResult,HttpStatus.OK);
@@ -69,15 +74,18 @@ public class PostController {
 	@CrossOrigin
 	public ResponseEntity<Object> createPost(@RequestBody NewPost newPost, HttpServletRequest httpRequest){
 		logger.info(LoggingConstants.REQUEST_LOGGER,"POST","/posts");
-
-		
-		// TODO: the below validation should be done from the token information.
 		
 		//The validation is handled by filter through token
 		
 //		parameterValidation.validateGroup(newPost.getGroupId());
 //		userValidation.isUserExisting(newPost.getPostCreator());
 		
+		String userName = httpRequest.getAttribute("userName").toString();
+		int groupId = Integer.parseInt(httpRequest.getAttribute("groupId").toString());
+		
+		//frontend will send dummy values in requestbody, but the actual names are in token
+		newPost.setPostCreator(userName);
+		newPost.setGroupId(groupId);
 		
 		Post createdPost = postLoginService.createNewPost(newPost);
 		
