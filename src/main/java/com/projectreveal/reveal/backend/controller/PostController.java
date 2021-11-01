@@ -2,6 +2,8 @@ package com.projectreveal.reveal.backend.controller;
 
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +29,7 @@ import com.projectreveal.reveal.backend.validation.UserValidation;
 
 @RestController
 @RequestMapping("/posts")
+@CrossOrigin(exposedHeaders = "Auth-Token")
 public class PostController {
 
 	private final Logger logger = LogManager.getLogger(PostController.class);
@@ -39,7 +43,6 @@ public class PostController {
 	private PostLoginService postLoginService;
 	
 	@GetMapping
-	@CrossOrigin
 	public ResponseEntity<Object> getPosts(@RequestParam("groupId") long groupId, 
 										   @RequestParam(name = "timeStamp", required = false ) Long timeStamp) 
 						throws JsonMappingException, JsonProcessingException{
@@ -48,7 +51,8 @@ public class PostController {
 		logger.info(LoggingConstants.REQUEST_LOGGER,"GET","/posts");
 		
 		if(timeStamp == null) timeStamp = System.currentTimeMillis();
-		parameterValidation.validateGroup(groupId);
+		//The validation is handled by filter through token
+
 		HashMap<String, Object> postsResult = null;
 		postsResult= postLoginService.getallPosts(groupId, timeStamp);
 		
@@ -57,11 +61,17 @@ public class PostController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Object> createPost(@RequestBody NewPost newPost){
+	public ResponseEntity<Object> createPost(@RequestBody NewPost newPost, HttpServletRequest httpRequest){
 		logger.info(LoggingConstants.REQUEST_LOGGER,"POST","/posts");
 
-		parameterValidation.validateGroup(newPost.getGroup());
-		userValidation.isUserExisting(newPost.getPostCreator());
+		
+		// TODO: the below validation should be done from the token information.
+		
+		//The validation is handled by filter through token
+		
+//		parameterValidation.validateGroup(newPost.getGroupId());
+//		userValidation.isUserExisting(newPost.getPostCreator());
+		
 		
 		Post createdPost = postLoginService.createNewPost(newPost);
 		

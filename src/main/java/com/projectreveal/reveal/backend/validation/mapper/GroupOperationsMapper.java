@@ -1,11 +1,7 @@
 package com.projectreveal.reveal.backend.validation.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
-
-import com.projectreveal.reveal.backend.entity.Group;
 
 @Mapper
 public interface GroupOperationsMapper {

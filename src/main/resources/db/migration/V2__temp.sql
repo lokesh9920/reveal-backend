@@ -1,1 +1,0 @@
-insert into groups (group_name,group_creator) values('GGG','NNN');
